@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <Resource Include="Assets\Icons\Exit.png" />
+    <Resource Include="Assets\Background.png" />
   </ItemGroup>
 
 </Project>
