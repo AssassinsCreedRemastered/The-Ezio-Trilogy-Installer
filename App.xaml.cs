@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Serilog;
+using Serilog.Core;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -20,8 +22,19 @@ namespace The_Ezio_Trilogy_Installer
         [DllImport("Kernel32")]
         public static extern void FreeConsole();
 
+        public App()
+        {
+            InitializeComponent();
+            // Activating Logging Tool
+            Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console(
+                outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss}|{Level}|{Message}{NewLine}{Exception}")
+            //.WriteTo.File("Installer Logs.txt", rollingInterval: RollingInterval.Day)
+            .CreateLogger();
+        }
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            // Checking for arguments
             foreach (var argument in e.Args)
             {
                 switch (argument)
@@ -34,6 +47,12 @@ namespace The_Ezio_Trilogy_Installer
                         break;
                 }
             }
+            Serilog.Log.Logger = Log.Logger;
+        }
+
+        private void Application_Exit(object sender, ExitEventArgs e)
+        {
+            Log.CloseAndFlush();
         }
     }
 }
