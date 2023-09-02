@@ -32,6 +32,7 @@ namespace The_Ezio_Trilogy_Installer
             //.WriteTo.File("Installer Logs.txt", rollingInterval: RollingInterval.Day)
             .CreateLogger();
         }
+
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             // Checking for arguments

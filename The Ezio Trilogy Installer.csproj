@@ -25,13 +25,13 @@
     <PackageReference Include="Serilog" Version="3.0.1" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    <PackageReference Include="SharpCompress" Version="0.33.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Assets\Font\Assassin$.ttf" />
     <Resource Include="Assets\Icons\Exit.png" />
     <Resource Include="Assets\Background.png" />
-    <Resource Include="Assets\Ko-Fi.png" />
   </ItemGroup>
 
 </Project>
