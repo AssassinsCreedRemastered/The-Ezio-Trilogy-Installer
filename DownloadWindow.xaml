@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:The_Ezio_Trilogy_Installer"
         mc:Ignorable="d"
-        Title="DownloadWindow" Height="150" Width="300" Background="#00000000" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None" Foreground="{x:Null}">
+        Title="DownloadWindow" Height="150" Width="300" Background="#00000000" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None">
     <Border Background="#FFDADADA"
             BorderBrush="Gray"
             BorderThickness="1"
@@ -17,7 +17,7 @@
             </Grid.RowDefinitions>
             <Rectangle Width="Auto" Height="Auto" RadiusX="10" RadiusY="10" Grid.ColumnSpan="4" Grid.RowSpan="4">
             </Rectangle>
-            <TextBlock Grid.Row="0" x:Name="Status" Text="" FontSize="18" TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="0" x:Name="Status" Text="" FontSize="20" TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,37,0,0"/>
             <ProgressBar x:Name="Progress" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="200" Height="20"></ProgressBar>
         </Grid>
     </Border>

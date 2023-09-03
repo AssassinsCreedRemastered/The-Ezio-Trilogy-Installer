@@ -238,6 +238,16 @@ namespace The_Ezio_Trilogy_Installer
                             System.IO.Directory.Move(Directory, path + @"\Mods\PCButtons");
                         }
                         break;
+                    case "RecognizableFeather":
+                        if (!System.IO.Directory.Exists(path + @"\Mods"))
+                        {
+                            System.IO.Directory.CreateDirectory(path + @"\Mods");
+                        };
+                        if (!System.IO.Directory.Exists(path + @"\Mods\Recognizable Feathers\"))
+                        {
+                            System.IO.Directory.Move(Directory, path + @"\Mods\Recognizable Feathers\");
+                        }
+                        break;
                     case "ReShade":
                         if (System.IO.Directory.Exists(Directory))
                         {
@@ -441,6 +451,7 @@ namespace The_Ezio_Trilogy_Installer
                             sw.Write("FontColour:255,0,0\n");
                             sw.Write("TextureColour:0,255,0\n");
                             sw.Write("Add_true:" + path + @"\Mods\Overhaul\Overhaul.tpf" + "\n");
+                            sw.Write("Add_true:" + path + @"\Mods\PCButtons\PC Buttons.tpf" + "\n");
                         }
                         string saveFile = path + @"\" + gameName + "|" + path + @"\uMod\templates\ac2.txt";
                         char[] array = saveFile.ToCharArray();
@@ -498,14 +509,21 @@ namespace The_Ezio_Trilogy_Installer
                     System.IO.Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered");
                     Log.Information("Folder where all paths to game installation folders created");
                 }
-                
+
+                // This is where custom mods will go
+                if (!System.IO.Directory.Exists(path + @"\Mods\Custom Mods"))
+                {
+                    System.IO.Directory.CreateDirectory(path + @"\Mods\Custom Mods");
+                }
+
                 Log.Information("Writing path towards Assassin's Creed 2 installation folder inside of AC2Path.txt");
                 using (StreamWriter sw = new StreamWriter(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\AC2Path.txt"))
                 {
                     sw.WriteLine(path);
                 };
                 // First need to read Sources.txt to get all of the download links
-                Log.Information("Reading Mods from the Sources");
+                Log.Information("Reading Mods download links from the Source");
+                
                 await ReadSources("https://raw.githubusercontent.com/AssassinsCreedRemastered/The-Ezio-Trilogy-Mods/main/AC2Sources.txt");
                 // For every download link we need to download it and then install it
                 for (int i = 0; i < Sources.Keys.Count; i++)

@@ -50,9 +50,29 @@
             </Button>
 
             <!--Install AC2 Button-->
-            <Button x:Name="InstallACII" Grid.Column="1" Grid.Row="1" Background="{x:Null}" BorderBrush="{x:Null}" BorderThickness="0,0,0,0" Cursor="Hand" Margin="0,406,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Height="112" Width="246" Click="InstallACII_Click">
+            <Button x:Name="InstallACII" Grid.Column="1" Grid.Row="1" Background="{x:Null}" BorderBrush="{x:Null}" BorderThickness="0,0,0,0" Cursor="Hand" Margin="0,400,200,0" HorizontalAlignment="Center" VerticalAlignment="Top" Click="InstallACII_Click">
                 <Button.Content>
-                    <TextBlock Text="    Install" FontFamily="Assassin$" FontSize="48" Foreground="WhiteSmoke" FontWeight="Bold" Height="112" Width="246">
+                    <TextBlock Text="install" FontFamily="Assassin$" FontSize="48" Foreground="WhiteSmoke" FontWeight="Bold">
+                        <TextBlock.Effect>
+                            <DropShadowEffect RenderingBias="Quality" ShadowDepth="5"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
+                </Button.Content>
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                  VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            <!--Uninstall AC2 Button-->
+            <Button x:Name="UninstallACII"  Grid.Column="1" Grid.Row="1" Background="{x:Null}" BorderBrush="{x:Null}" BorderThickness="0,0,0,0" Cursor="Hand" Margin="200,400,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Click="UninstallACII_Click">
+                <Button.Content>
+                    <TextBlock Text="uninstall" FontFamily="Assassin$" FontSize="48" Foreground="WhiteSmoke" FontWeight="Bold" >
                         <TextBlock.Effect>
                             <DropShadowEffect RenderingBias="Quality" ShadowDepth="5"/>
                         </TextBlock.Effect>
@@ -71,9 +91,9 @@
             </Button>
 
             <!--Install ACB Button-->
-            <Button x:Name="InstallACB" Grid.Column="0" Grid.Row="1" Background="{x:Null}" BorderBrush="{x:Null}" BorderThickness="0,0,0,0" Cursor="Hand" Margin="0,394,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Height="138" Width="246" Click="InstallACB_Click">
+            <Button x:Name="InstallACB" Grid.Column="0" Grid.Row="1" Background="{x:Null}" BorderBrush="{x:Null}" BorderThickness="0,0,0,0" Cursor="Hand" Margin="0,400,200,0" HorizontalAlignment="Center" VerticalAlignment="Top" Click="InstallACB_Click">
                 <Button.Content>
-                    <TextBlock Text="    Install" FontFamily="Assassin$" FontSize="48" Foreground="WhiteSmoke" FontWeight="Bold" Height="136" Width="246">
+                    <TextBlock Text="install" FontFamily="Assassin$" FontSize="48" Foreground="WhiteSmoke" FontWeight="Bold" >
                         <TextBlock.Effect>
                             <DropShadowEffect RenderingBias="Quality" ShadowDepth="5"/>
                         </TextBlock.Effect>
@@ -90,11 +110,51 @@
                     </ControlTemplate>
                 </Button.Template>
             </Button>
-            
-            <!--Install ACR Button-->
-            <Button x:Name="InstallACR" Grid.Column="2" Grid.Row="1" Background="{x:Null}" BorderBrush="{x:Null}" BorderThickness="0,0,0,0" Cursor="Hand" Margin="0,394,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Height="138" Width="246" Click="InstallACR_Click">
+            <!--Uninstall ACB Button-->
+            <Button x:Name="UninstallACB" Grid.Column="0" Grid.Row="1" Background="{x:Null}" BorderBrush="{x:Null}" BorderThickness="0,0,0,0" Cursor="Hand" Margin="200,400,0,0" HorizontalAlignment="Center" VerticalAlignment="Top">
                 <Button.Content>
-                    <TextBlock Text="    Install" FontFamily="Assassin$" FontSize="48" Foreground="WhiteSmoke" FontWeight="Bold" Height="136" Width="246">
+                    <TextBlock Text="uninstall" FontFamily="Assassin$" FontSize="48" Foreground="WhiteSmoke" FontWeight="Bold" >
+                        <TextBlock.Effect>
+                            <DropShadowEffect RenderingBias="Quality" ShadowDepth="5"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
+                </Button.Content>
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                  VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+
+            <!--Install ACR Button-->
+            <Button x:Name="InstallACR" Grid.Column="2" Grid.Row="1" Background="{x:Null}" BorderBrush="{x:Null}" BorderThickness="0,0,0,0" Cursor="Hand" Margin="0,400,200,0" HorizontalAlignment="Center" VerticalAlignment="Top" Click="InstallACR_Click">
+                <Button.Content>
+                    <TextBlock Text="install" FontFamily="Assassin$" FontSize="48" Foreground="WhiteSmoke" FontWeight="Bold">
+                        <TextBlock.Effect>
+                            <DropShadowEffect RenderingBias="Quality" ShadowDepth="5"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
+                </Button.Content>
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                  VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            <!--Uninstall ACR Button-->
+            <Button x:Name="UninstallACR" Grid.Column="2" Grid.Row="1" Background="{x:Null}" BorderBrush="{x:Null}" BorderThickness="0,0,0,0" Cursor="Hand" Margin="200,400,0,0" HorizontalAlignment="Center" VerticalAlignment="Top">
+                <Button.Content>
+                    <TextBlock Text="uninstall" FontFamily="Assassin$" FontSize="48" Foreground="WhiteSmoke" FontWeight="Bold" >
                         <TextBlock.Effect>
                             <DropShadowEffect RenderingBias="Quality" ShadowDepth="5"/>
                         </TextBlock.Effect>
