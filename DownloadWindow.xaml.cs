@@ -207,6 +207,7 @@ namespace The_Ezio_Trilogy_Installer
                             {
                                 System.IO.File.Delete(path + @"\scripts\Readme - EaglePatchAC2.txt");
                             }
+                            await disableUnlockingRewards();
                         }
                         break;
                     case "uMod":
@@ -289,6 +290,44 @@ namespace The_Ezio_Trilogy_Installer
             catch (Exception ex)
             {
                 Log.Error(ex, "");
+                return;
+            }
+        }
+
+        // Disable unlocking Uplay Rewards in EaglePatch
+        private async Task disableUnlockingRewards()
+        {
+            try
+            {
+                if (System.IO.File.Exists(path + @"\scripts\EaglePatchAC2.ini"))
+                {
+                    using (StreamReader sr = new StreamReader(path + @"\scripts\EaglePatchAC2.ini"))
+                    {
+                        using (StreamWriter sw = new StreamWriter(path + @"\scripts\EaglePatchAC2temp.ini"))
+                        {
+                            string line = sr.ReadLine();
+                            while (line != null)
+                            {
+                                if (line.StartsWith("UPlayItems"))
+                                {
+                                    sw.Write("UPlayItems=0");
+                                } else
+                                {
+                                    sw.WriteLine(line);
+                                }
+                                line = sr.ReadLine();
+                            }
+                        }
+                    }
+                    File.Delete(path + @"\scripts\EaglePatchAC2.ini");
+                    File.Move(path + @"\scripts\EaglePatchAC2temp.ini", path + @"\scripts\EaglePatchAC2.ini");
+                }
+                await Task.Delay(1);
+            }
+            catch (Exception ex)
+            {
+                Log.Information(ex, "");
+                MessageBox.Show(ex.Message);
                 return;
             }
         }

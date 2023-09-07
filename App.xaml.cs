@@ -44,7 +44,6 @@ namespace The_Ezio_Trilogy_Installer
                         AllocConsole();
                         break;
                     default:
-                        FreeConsole();
                         break;
                 }
             }
