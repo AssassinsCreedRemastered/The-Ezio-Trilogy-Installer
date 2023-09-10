@@ -194,6 +194,23 @@ namespace The_Ezio_Trilogy_Installer
                     System.IO.File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\AC2Path.txt");
                 }
 
+                MessageBoxResult LauncherDeletion = System.Windows.MessageBox.Show("Do you want to delete the launcher?", "Confirmation", MessageBoxButton.YesNo);
+                if (LauncherDeletion == MessageBoxResult.Yes)
+                {
+                    if (System.IO.File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\The Ezio Trilogy Launcher.exe"))
+                    {
+                        System.IO.File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\The Ezio Trilogy Launcher.exe");
+                    }
+                    if (System.IO.File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\Assassin's Creed - The Ezio Trilogy Remastered.lnk"))
+                    {
+                        System.IO.File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\Assassin's Creed - The Ezio Trilogy Remastered.lnk");
+                    }
+                    if (System.IO.File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu) + @"\Assassin's Creed - The Ezio Trilogy Remastered.lnk"))
+                    {
+                        System.IO.File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu) + @"\Assassin's Creed - The Ezio Trilogy Remastered.lnk");
+                    }
+                }
+
                 // Checking if Documents folder containing all of the Paths towards game installation folders is empty, if it is remove it
                 Log.Information("Checking if Documents folder containing all of the Paths towards game installation folders exist");
                 if (System.IO.Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\"))

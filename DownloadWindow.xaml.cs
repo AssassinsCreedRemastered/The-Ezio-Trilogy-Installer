@@ -18,6 +18,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Xml.Linq;
+using IWshRuntimeLibrary;
+using System.Windows.Forms;
 
 namespace The_Ezio_Trilogy_Installer
 {
@@ -72,7 +74,7 @@ namespace The_Ezio_Trilogy_Installer
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show(ex.ToString());
+                            System.Windows.MessageBox.Show(ex.ToString());
                             continue;
                         }
                     }
@@ -207,7 +209,19 @@ namespace The_Ezio_Trilogy_Installer
                             {
                                 System.IO.File.Delete(path + @"\scripts\Readme - EaglePatchAC2.txt");
                             }
-                            await disableUnlockingRewards();
+                            await DisableUnlockingRewards();
+                        }
+                        break;
+                    case "Launcher":
+                        if (System.IO.Directory.Exists(Directory))
+                        {
+                            if (System.IO.Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\"))
+                            {
+                                if (!System.IO.File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\The Ezio Trilogy Launcher.exe"))
+                                {
+                                    System.IO.File.Move(Directory + @"\The Ezio Trilogy Launcher.exe", Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\The Ezio Trilogy Launcher.exe");
+                                }
+                            }
                         }
                         break;
                     case "uMod":
@@ -278,8 +292,6 @@ namespace The_Ezio_Trilogy_Installer
                             System.IO.Directory.Move(Directory, path + @"\Mods\Overhaul");
                         }
                         break;
-                    case "Launcher":
-                        break;
                     default:
                         break;
                 }
@@ -295,7 +307,7 @@ namespace The_Ezio_Trilogy_Installer
         }
 
         // Disable unlocking Uplay Rewards in EaglePatch
-        private async Task disableUnlockingRewards()
+        private async Task DisableUnlockingRewards()
         {
             try
             {
@@ -319,15 +331,15 @@ namespace The_Ezio_Trilogy_Installer
                             }
                         }
                     }
-                    File.Delete(path + @"\scripts\EaglePatchAC2.ini");
-                    File.Move(path + @"\scripts\EaglePatchAC2temp.ini", path + @"\scripts\EaglePatchAC2.ini");
+                    System.IO.File.Delete(path + @"\scripts\EaglePatchAC2.ini");
+                    System.IO.File.Move(path + @"\scripts\EaglePatchAC2temp.ini", path + @"\scripts\EaglePatchAC2.ini");
                 }
                 await Task.Delay(1);
             }
             catch (Exception ex)
             {
                 Log.Information(ex, "");
-                MessageBox.Show(ex.Message);
+                System.Windows.MessageBox.Show(ex.Message);
                 return;
             }
         }
@@ -387,7 +399,7 @@ namespace The_Ezio_Trilogy_Installer
                 }
                 else
                 {
-                    if (!File.Exists(AppData + @"\uMod\uMod_DX9.txt"))
+                    if (!System.IO.File.Exists(AppData + @"\uMod\uMod_DX9.txt"))
                     {
                         Log.Information("No old uMod config detected. Doing fresh setup");
                         Directory.CreateDirectory(AppData + @"\uMod");
@@ -457,8 +469,8 @@ namespace The_Ezio_Trilogy_Installer
                                 sw.Write(ExecutablePath);
                             }
                         }
-                        File.Delete(AppData + @"\uMod\uMod_DX9.txt");
-                        File.Move(AppData + @"\uMod\uMod_DX9temp.txt", AppData + @"\uMod\uMod_DX9.txt");
+                        System.IO.File.Delete(AppData + @"\uMod\uMod_DX9.txt");
+                        System.IO.File.Move(AppData + @"\uMod\uMod_DX9temp.txt", AppData + @"\uMod\uMod_DX9.txt");
                     }
                 }
                 Log.Information("Setting up uMod AppData config done");
@@ -479,6 +491,13 @@ namespace The_Ezio_Trilogy_Installer
                 {
                     System.IO.Directory.CreateDirectory(path + @"\uMod\templates");
                 }
+                if (!System.IO.File.Exists(path + @"\uMod\Status.txt"))
+                {
+                    using (StreamWriter sw = new StreamWriter(path + @"\uMod\Status.txt"))
+                    {
+                        sw.Write("Enabled=1");
+                    }
+                }
                 switch (gameName)
                 {
                     case "AssassinsCreedIIGame.exe":
@@ -489,8 +508,8 @@ namespace The_Ezio_Trilogy_Installer
                             sw.Write("SaveSingleTexture:0\n");
                             sw.Write("FontColour:255,0,0\n");
                             sw.Write("TextureColour:0,255,0\n");
-                            sw.Write("Add_true:" + path + @"\Mods\Overhaul\Overhaul.tpf" + "\n");
                             sw.Write("Add_true:" + path + @"\Mods\PCButtons\PC Buttons.tpf" + "\n");
+                            sw.Write("Add_true:" + path + @"\Mods\Overhaul\Overhaul.tpf" + "\n");
                         }
                         string saveFile = path + @"\" + gameName + "|" + path + @"\uMod\templates\ac2.txt";
                         char[] array = saveFile.ToCharArray();
@@ -525,6 +544,38 @@ namespace The_Ezio_Trilogy_Installer
             {
                 Log.Error(ex, "");
                 return;
+            }
+        }
+
+        // Create Shortcut
+        private async Task CreateShortcut()
+        {
+            try
+            {
+                if (!System.IO.File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\Assassin's Creed - The Ezio Trilogy Remastered.lnk"))
+                {
+                    MessageBoxResult result = System.Windows.MessageBox.Show("Do you want to create shortcut?", "Confirmation", MessageBoxButton.YesNo);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        Log.Information("Creating shortcuts");
+                        WshShell shell = new WshShell();
+                        IWshShortcut shortcut = shell.CreateShortcut(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\Assassin's Creed - The Ezio Trilogy Remastered.lnk");
+                        shortcut.Description = "Shortcut for Assassin's Creed - The Ezio Trilogy Remastered (Community Edition) Launcher";
+                        shortcut.IconLocation = $"{Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\The Ezio Trilogy Launcher.exe"},{0}";
+                        shortcut.TargetPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\The Ezio Trilogy Launcher.exe";
+                        shortcut.Save();
+                        System.IO.File.Copy(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\Assassin's Creed - The Ezio Trilogy Remastered.lnk", Environment.GetFolderPath(Environment.SpecialFolder.StartMenu) + @"\Assassin's Creed - The Ezio Trilogy Remastered.lnk");
+                    } else
+                    {
+                        Log.Information("Skipping creation of shortcuts");
+                    }
+                }
+                await Task.Delay(1);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "");
+                System.Windows.MessageBox.Show(ex.Message);
             }
         }
 
@@ -576,6 +627,7 @@ namespace The_Ezio_Trilogy_Installer
                 };
                 Status.Text = "Setting up uMod";
                 await uModSetup("AssassinsCreedIIGame.exe");
+                await CreateShortcut();
                 Log.Information("Cleaning up");
                 Status.Text = "Cleaning up";
                 System.IO.Directory.Delete(Directory.GetCurrentDirectory() + @"\Installation Files", true);
