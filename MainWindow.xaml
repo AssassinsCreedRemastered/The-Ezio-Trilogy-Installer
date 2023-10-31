@@ -111,7 +111,7 @@
                 </Button.Template>
             </Button>
             <!--Uninstall ACB Button-->
-            <Button x:Name="UninstallACB" Grid.Column="0" Grid.Row="1" Background="{x:Null}" BorderBrush="{x:Null}" BorderThickness="0,0,0,0" Cursor="Hand" Margin="200,400,0,0" HorizontalAlignment="Center" VerticalAlignment="Top">
+            <Button x:Name="UninstallACB" Grid.Column="0" Grid.Row="1" Background="{x:Null}" BorderBrush="{x:Null}" BorderThickness="0,0,0,0" Cursor="Hand" Margin="200,400,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Click="UninstallACB_Click">
                 <Button.Content>
                     <TextBlock Text="uninstall" FontFamily="Assassin$" FontSize="48" Foreground="WhiteSmoke" FontWeight="Bold" >
                         <TextBlock.Effect>

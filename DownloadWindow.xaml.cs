@@ -20,6 +20,7 @@ using System.Windows.Shapes;
 using System.Xml.Linq;
 using IWshRuntimeLibrary;
 using System.Windows.Forms;
+using System.Windows.Markup.Localizer;
 
 namespace The_Ezio_Trilogy_Installer
 {
@@ -44,6 +45,11 @@ namespace The_Ezio_Trilogy_Installer
             {
                 path = installationPath;
                 AC2Installation();
+            }
+            else if (game == "ACB")
+            {
+                path = installationPath;
+                ACBInstallation();
             }
         }
 
@@ -253,16 +259,6 @@ namespace The_Ezio_Trilogy_Installer
                             System.IO.Directory.Move(Directory, path + @"\Mods\PCButtons");
                         }
                         break;
-                    case "RecognizableFeather":
-                        if (!System.IO.Directory.Exists(path + @"\Mods"))
-                        {
-                            System.IO.Directory.CreateDirectory(path + @"\Mods");
-                        };
-                        if (!System.IO.Directory.Exists(path + @"\Mods\Recognizable Feathers\"))
-                        {
-                            System.IO.Directory.Move(Directory, path + @"\Mods\Recognizable Feathers\");
-                        }
-                        break;
                     case "ReShade":
                         if (System.IO.Directory.Exists(Directory))
                         {
@@ -351,10 +347,10 @@ namespace The_Ezio_Trilogy_Installer
             {
                 Log.Information("Setting up uMod");
                 await uModAppData(gameName);
-                await Task.Delay(10);
+                await Task.Delay(1);
                 await uModSaveFile(gameName);
                 GC.Collect();
-                await Task.Delay(10);
+                await Task.Delay(1);
             }
             catch (Exception ex)
             {
@@ -474,7 +470,7 @@ namespace The_Ezio_Trilogy_Installer
                     }
                 }
                 Log.Information("Setting up uMod AppData config done");
-                await Task.Delay(10);
+                await Task.Delay(1);
             }
             catch (Exception ex)
             {
@@ -491,18 +487,18 @@ namespace The_Ezio_Trilogy_Installer
                 {
                     System.IO.Directory.CreateDirectory(path + @"\uMod\templates");
                 }
-                if (!System.IO.File.Exists(path + @"\uMod\Status.txt"))
-                {
-                    using (StreamWriter sw = new StreamWriter(path + @"\uMod\Status.txt"))
-                    {
-                        sw.Write("Enabled=1");
-                    }
-                }
                 switch (gameName)
                 {
                     case "AssassinsCreedIIGame.exe":
+                        if (!System.IO.File.Exists(path + @"\uMod\Status.txt"))
+                        {
+                            using (StreamWriter sw = new StreamWriter(path + @"\uMod\Status.txt"))
+                            {
+                                sw.Write("Enabled=1");
+                            }
+                        }
                         Log.Information("Setting up uMod for Assassin's Creed 2");
-                        using (StreamWriter sw = new StreamWriter(path + @"\uMod\templates\ac2.txt"))
+                        using (StreamWriter sw = new StreamWriter(path + $@"\uMod\templates\{System.IO.Path.GetFileNameWithoutExtension(gameName)}.txt"))
                         {
                             sw.Write("SaveAllTextures:0\n");
                             sw.Write("SaveSingleTexture:0\n");
@@ -511,34 +507,75 @@ namespace The_Ezio_Trilogy_Installer
                             sw.Write("Add_true:" + path + @"\Mods\PCButtons\PC Buttons.tpf" + "\n");
                             sw.Write("Add_true:" + path + @"\Mods\Overhaul\Overhaul.tpf" + "\n");
                         }
-                        string saveFile = path + @"\" + gameName + "|" + path + @"\uMod\templates\ac2.txt";
-                        char[] array = saveFile.ToCharArray();
-                        List<char> charList = new List<char>();
-                        for (int i = 0; i < array.Length; i++)
+                        string AC2saveFile = path + @"\" + gameName + "|" + path + $@"\uMod\templates\{System.IO.Path.GetFileNameWithoutExtension(gameName)}.txt";
+                        char[] AC2array = AC2saveFile.ToCharArray();
+                        List<char> AC2charList = new List<char>();
+                        for (int i = 0; i < AC2array.Length; i++)
                         {
                             if (i == 0)
                             {
-                                charList.Add(array[i]);
+                                AC2charList.Add(AC2array[i]);
                             }
                             else
                             {
-                                charList.Add('\0');
-                                charList.Add(array[i]);
+                                AC2charList.Add('\0');
+                                AC2charList.Add(AC2array[i]);
                             }
                         }
-                        charList.Add('\0');
-                        char[] charArray = charList.ToArray();
-                        string SaveFilePATH = new string(charArray);
+                        AC2charList.Add('\0');
+                        char[] AC2charArray = AC2charList.ToArray();
+                        string AC2SaveFilePATH = new string(AC2charArray);
                         using (StreamWriter sw = new StreamWriter(path + @"\uMod\uMod_SaveFiles.txt"))
                         {
-                            sw.Write(SaveFilePATH);
+                            sw.Write(AC2SaveFilePATH);
                         }
                         Log.Information("Setting up uMod for Assassin's Creed 2 done");
+                        break;
+                    case "ACBSP.exe":
+                        Log.Information("Setting up uMod for Assassin's Creed Brotherhood");
+                        if (!System.IO.File.Exists(path + @"\uMod\Status.txt"))
+                        {
+                            using (StreamWriter sw = new StreamWriter(path + @"\uMod\Status.txt"))
+                            {
+                                sw.Write("Enabled=0");
+                            }
+                        }
+                        using (StreamWriter sw = new StreamWriter(path + $@"\uMod\templates\{System.IO.Path.GetFileNameWithoutExtension(gameName)}.txt"))
+                        {
+                            sw.Write("SaveAllTextures:0\n");
+                            sw.Write("SaveSingleTexture:0\n");
+                            sw.Write("FontColour:255,0,0\n");
+                            sw.Write("TextureColour:0,255,0\n");
+                            sw.Write("Add_true:" + path + @"\Mods\PS3Buttons\ACB PS Buttons.tpf" + "\n");
+                        }
+                        string ACBsaveFile = path + @"\" + gameName + "|" + path + $@"\uMod\templates\{System.IO.Path.GetFileNameWithoutExtension(gameName)}.txt";
+                        char[] ACBarray = ACBsaveFile.ToCharArray();
+                        List<char> ACBcharList = new List<char>();
+                        for (int i = 0; i < ACBarray.Length; i++)
+                        {
+                            if (i == 0)
+                            {
+                                ACBcharList.Add(ACBarray[i]);
+                            }
+                            else
+                            {
+                                ACBcharList.Add('\0');
+                                ACBcharList.Add(ACBarray[i]);
+                            }
+                        }
+                        ACBcharList.Add('\0');
+                        char[] ACBcharArray = ACBcharList.ToArray();
+                        string ACBSaveFilePATH = new string(ACBcharArray);
+                        using (StreamWriter sw = new StreamWriter(path + @"\uMod\uMod_SaveFiles.txt"))
+                        {
+                            sw.Write(ACBSaveFilePATH);
+                        }
+                        Log.Information("Setting up uMod for Assassin's Creed Brotherhood done");
                         break;
                     default:
                         break;
                 }
-                await Task.Delay(10);
+                await Task.Delay(1);
             }
             catch (Exception ex)
             {
@@ -584,6 +621,7 @@ namespace The_Ezio_Trilogy_Installer
         {
             try
             {
+                Log.Information("Assassin's Creed 2 installation started");
                 // Creating folder where all of the temporary files will be stored
                 if (!System.IO.Directory.Exists("Installation Files"))
                 {
@@ -606,14 +644,15 @@ namespace The_Ezio_Trilogy_Installer
                     System.IO.Directory.CreateDirectory(path + @"\Mods\Custom Mods");
                 }
 
+                // Path towards executable
                 Log.Information("Writing path towards Assassin's Creed 2 installation folder inside of AC2Path.txt");
                 using (StreamWriter sw = new StreamWriter(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\AC2Path.txt"))
                 {
                     sw.WriteLine(path);
                 };
+
                 // First need to read Sources.txt to get all of the download links
                 Log.Information("Reading Mods download links from the Source");
-                
                 await ReadSources("https://raw.githubusercontent.com/AssassinsCreedRemastered/The-Ezio-Trilogy-Mods/main/AC2Sources.txt");
                 // For every download link we need to download it and then install it
                 for (int i = 0; i < Sources.Keys.Count; i++)
@@ -632,7 +671,71 @@ namespace The_Ezio_Trilogy_Installer
                 Status.Text = "Cleaning up";
                 System.IO.Directory.Delete(Directory.GetCurrentDirectory() + @"\Installation Files", true);
                 Log.Information("Installation Complete");
-                await Task.Delay(10);
+                await Task.Delay(1);
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "");
+                return;
+            }
+        }
+
+        private async void ACBInstallation()
+        {
+            try
+            {
+                Log.Information("Assassin's Creed Brotherhood installation started");
+                // Creating folder where all of the temporary files will be stored
+                if (!System.IO.Directory.Exists("Installation Files"))
+                {
+                    Log.Information("Installation Files folder not found.");
+                    System.IO.Directory.CreateDirectory("Installation Files");
+                    Log.Information("Installation Files folder created.");
+                }
+
+                // This is where path to the install will be located
+                if (!System.IO.Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered"))
+                {
+                    Log.Information("Folder where all paths to game installation folders go not found.");
+                    System.IO.Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered");
+                    Log.Information("Folder where all paths to game installation folders created");
+                }
+
+                // This is where custom mods will go
+                if (!System.IO.Directory.Exists(path + @"\Mods\Custom Mods"))
+                {
+                    System.IO.Directory.CreateDirectory(path + @"\Mods\Custom Mods");
+                }
+
+                // Path towards executable
+                Log.Information("Writing path towards Assassin's Creed Brotherhood installation folder inside of ACBPath.txt");
+                using (StreamWriter sw = new StreamWriter(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\ACBPath.txt"))
+                {
+                    sw.WriteLine(path);
+                };
+
+                // First need to read Sources.txt to get all of the download links
+                Log.Information("Reading Mods download links from the Source");
+                await ReadSources("https://raw.githubusercontent.com/AssassinsCreedRemastered/The-Ezio-Trilogy-Mods/main/ACBSources.txt");
+                // For every download link we need to download it and then install it
+                for (int i = 0; i < Sources.Keys.Count; i++)
+                {
+                    KeyValuePair<string, string> keyValue = Sources.ElementAt(i);
+                    if (!System.IO.File.Exists(Directory.GetCurrentDirectory() + @"\Installation Files\" + keyValue.Key))
+                    {
+                        await DownloadFiles(keyValue.Value, @"Installation Files\" + keyValue.Key);
+                    }
+                    await InstallMods(keyValue.Key);
+                };
+                Status.Text = "Setting up uMod";
+                await uModSetup("ACBSP.exe");
+                await CreateShortcut();
+                Status.Text = "Cleaning up";
+                Log.Information("Cleaning up");
+                System.IO.Directory.Delete(Directory.GetCurrentDirectory() + @"\Installation Files", true);
+                Log.Information("Installation Complete");
+                await Task.Delay(1);
                 this.Close();
             }
             catch (Exception ex)

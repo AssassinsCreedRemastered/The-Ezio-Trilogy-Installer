@@ -26,7 +26,7 @@ namespace The_Ezio_Trilogy_Installer
     public partial class MainWindow : Window
     {
 
-        private string path {  get; set; }
+        private string? path {  get; set; }
 
         public MainWindow()
         {
@@ -123,6 +123,46 @@ namespace The_Ezio_Trilogy_Installer
                 Log.Error(ex, "Error:");
                 return;
             }
+        }
+
+        private async void InstallACB_Click(object sender, RoutedEventArgs e)
+        {
+            Log.Information("Installing Assassin's Creed Brotherhood");
+            try
+            {
+                OpenFileDialog FileDialog = new OpenFileDialog();
+                FileDialog.Filter = "Executable Files|ACBSP.exe";
+                FileDialog.Title = "Select Assassins Creed - Brotherhood Executable";
+                if (FileDialog.ShowDialog() == true)
+                {
+                    path = System.IO.Path.GetDirectoryName(FileDialog.FileName);
+                }
+                else
+                {
+                    return;
+                }
+                DownloadWindow download = new DownloadWindow("ACB", path);
+                if (download == null || !download.IsVisible)
+                {
+                    download.ShowDialog();
+                }
+                else
+                {
+                    download.ShowDialog();
+                }
+                MessageBox.Show("Installation done");
+                await Task.Delay(1);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error:");
+                return;
+            }
+        }
+
+        private void InstallACR_Click(object sender, RoutedEventArgs e)
+        {
+
         }
 
         private void UninstallACII_Click(object sender, RoutedEventArgs e)
@@ -266,14 +306,65 @@ namespace The_Ezio_Trilogy_Installer
             }
         }
 
-        private void InstallACB_Click(object sender, RoutedEventArgs e)
+        private void UninstallACB_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                OpenFileDialog FileDialog = new OpenFileDialog();
+                FileDialog.Filter = "Executable Files|ACBSP.exe";
+                FileDialog.Title = "Select Assassins Creed Brotherhood Executable";
+                if (FileDialog.ShowDialog() == true)
+                {
+                    path = System.IO.Path.GetDirectoryName(FileDialog.FileName);
+                }
+                else
+                {
+                    Log.Information("Uninstallation cancelled");
+                    MessageBox.Show("Unninstallation cancelled");
+                    return;
+                }
 
-        }
+                // Delete Mods Folder that has all of the uMod mods
+                Log.Information("Removing uMod mods folder");
+                if (System.IO.Directory.Exists(path + @"\Mods"))
+                {
+                    System.IO.Directory.Delete(path + @"\Mods", true);
+                }
 
-        private void InstallACR_Click(object sender, RoutedEventArgs e)
-        {
+                // Delete Ultimate ASI Loader
+                Log.Information("Removing ASI Loader");
+                if (System.IO.File.Exists(path + @"\dinput8.dll"))
+                {
+                    System.IO.File.Delete(path + @"\dinput8.dll");
+                };
 
+                // Delete scripts folder that has EaglePatch
+                Log.Information("Removing EaglePatch");
+                if (System.IO.Directory.Exists(path + @"\scripts"))
+                {
+                    System.IO.Directory.Delete(path + @"\scripts", true);
+                };
+
+                // Delete uMod
+                Log.Information("Removing uMod");
+                if (System.IO.Directory.Exists(path + @"\uMod"))
+                {
+                    System.IO.Directory.Delete(path + @"\uMod", true);
+                }
+
+                // Removing path
+                Log.Information("Removing txt file containing game path towards the game");
+                if (System.IO.File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\ACBPath.txt"))
+                {
+                    System.IO.File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\ACBPath.txt");
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "");
+                MessageBox.Show(ex.Message);
+                return;
+            }
         }
     }
 }
