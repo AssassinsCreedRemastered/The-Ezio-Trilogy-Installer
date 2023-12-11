@@ -21,6 +21,7 @@ using System.Xml.Linq;
 using IWshRuntimeLibrary;
 using System.Windows.Forms;
 using System.Windows.Markup.Localizer;
+using System.Net.Http;
 
 namespace The_Ezio_Trilogy_Installer
 {
@@ -30,7 +31,7 @@ namespace The_Ezio_Trilogy_Installer
     public partial class DownloadWindow : Window
     {
         // Global Variables
-        private string path { get; set; } // This is where installation directory is
+        private string? path { get; set; } // This is where installation directory is
         Dictionary<string, string> Sources = new Dictionary<string, string>(); // This has all of the links for mods
 
         public DownloadWindow()
@@ -52,8 +53,53 @@ namespace The_Ezio_Trilogy_Installer
                 ACBInstallation();
             }
         }
-
         // Universal functions
+        /// <summary>
+        /// Reads sources from a text file on Github repo and stores them into Dictionary
+        /// </summary>
+        /// <param name="url">URL where text file is stored.</param>
+        private async Task ReadSources(string url)
+        {
+            try
+            {
+                Status.Text = "Grabbing Sources";
+                Sources.Clear();
+                using (HttpClient client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
+
+                    var response = await client.GetStringAsync(url);
+                    var lines = response.Split(new char[] { '\n' });
+
+                    foreach (var line in lines)
+                    {
+                        try
+                        {
+                            if (!string.IsNullOrEmpty(line))
+                            {
+                                var splitLine = line.Split(';');
+                                Sources.Add(splitLine[0], splitLine[1]);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Windows.MessageBox.Show(ex.ToString());
+                            continue;
+                        }
+                    }
+                }
+
+                GC.Collect();
+                await Task.Delay(1);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error:");
+                return;
+            }
+        }
+
+        /*
         private async Task ReadSources(string url)
         {
             try
@@ -86,16 +132,18 @@ namespace The_Ezio_Trilogy_Installer
                     }
                 }
                 GC.Collect();
-                await Task.Delay(10);
+                await Task.Delay(1);
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "");
+                Log.Error(ex, "Error:");
                 return;
             }
         }
+        */
 
-        // Used to download mods from Github
+        /*
+         * Old method
         private async Task DownloadFiles(string url, string Destination)
         {
             try
@@ -110,7 +158,7 @@ namespace The_Ezio_Trilogy_Installer
                 }
                 GC.Collect();
                 Log.Information("Download finished");
-                await Task.Delay(10);
+                await Task.Delay(1);
             }
             catch (Exception ex)
             {
@@ -124,8 +172,65 @@ namespace The_Ezio_Trilogy_Installer
         {
             Progress.Value = e.ProgressPercentage;
         }
+        */
+        /// <summary>
+        /// Downloads mods from Github backup repository
+        /// </summary>
+        /// <param name="url">URL where text file is stored.</param>
+        /// <param name="Destination">Path where downloaded files are stored.</param>
+        private async Task DownloadFiles(string url, string destination)
+        {
+            try
+            {
+                Log.Information($"Downloading {System.IO.Path.GetFileNameWithoutExtension(destination)}");
+                Status.Text = "Downloading " + System.IO.Path.GetFileNameWithoutExtension(destination);
+                Progress.Value = 0;
 
-        // This is used to install mods
+                using (HttpClient client = new HttpClient())
+                {
+                    using (var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead))
+                    {
+                        response.EnsureSuccessStatusCode();
+
+                        using (var stream = await response.Content.ReadAsStreamAsync())
+                        using (var fileStream = new FileStream(destination, FileMode.Create, FileAccess.Write, FileShare.None))
+                        {
+                            var totalBytes = response.Content.Headers.ContentLength ?? -1;
+                            var buffer = new byte[8192];
+                            var bytesRead = 0;
+                            var totalRead = 0;
+                            do
+                            {
+                                bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
+                                if (bytesRead > 0)
+                                {
+                                    await fileStream.WriteAsync(buffer, 0, bytesRead);
+
+                                    totalRead += bytesRead;
+
+                                    // Calculate progress percentage
+                                    var progressPercentage = totalBytes == -1 ? 0 : (int)((double)totalRead / totalBytes * 100);
+                                    Progress.Value = progressPercentage;
+                                }
+                            } while (bytesRead > 0);
+                        }
+                    }
+                }
+
+                Log.Information("Download finished");
+                await Task.Delay(1);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error:");
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Installs downloaded mods
+        /// </summary>
+        /// <param name="name">Name of the mod folder</param>
         private async Task InstallMods(string name)
         {
             try
@@ -152,7 +257,11 @@ namespace The_Ezio_Trilogy_Installer
             }
         }
 
-        // Used to extract files
+        /// <summary>
+        /// Extracts the zip of mods
+        /// </summary>
+        /// <param name="fullPath">Full path to the zip file.</param>
+        /// <param name="Directory">Where it'll be extracted to.</param>
         private async Task Extract(string fullPath, string Directory)
         {
             try
@@ -183,7 +292,11 @@ namespace The_Ezio_Trilogy_Installer
             }
         }
 
-        // Move files to game folder
+        /// <summary>
+        /// Move files to game folder
+        /// </summary>
+        /// <param name="name">Name of the mod folder.</param>
+        /// <param name="Directory">Where it'll be moved to.</param>
         private async Task Move(string name, string Directory)
         {
             try
@@ -302,7 +415,9 @@ namespace The_Ezio_Trilogy_Installer
             }
         }
 
-        // Disable unlocking Uplay Rewards in EaglePatch
+        /// <summary>
+        /// Disable unlocking Uplay Rewards in EaglePatch (Better method implemented)
+        /// </summary>
         private async Task DisableUnlockingRewards()
         {
             try
@@ -313,7 +428,7 @@ namespace The_Ezio_Trilogy_Installer
                     {
                         using (StreamWriter sw = new StreamWriter(path + @"\scripts\EaglePatchAC2temp.ini"))
                         {
-                            string line = sr.ReadLine();
+                            string? line = sr.ReadLine();
                             while (line != null)
                             {
                                 if (line.StartsWith("UPlayItems"))
@@ -340,7 +455,10 @@ namespace The_Ezio_Trilogy_Installer
             }
         }
 
-        // Used to setup uMod
+        /// <summary>
+        /// Used to setup uMod
+        /// </summary>
+        /// <param name="gameName">Name of the game.</param>
         private async Task uModSetup(string gameName)
         {
             try
@@ -359,6 +477,10 @@ namespace The_Ezio_Trilogy_Installer
             }
         }
 
+        /// <summary>
+        /// Adds the game to the AppData uMod file
+        /// </summary>
+        /// <param name="gameName">Name of the game.</param>
         private async Task uModAppData(string gameName)
         {
             try
@@ -448,7 +570,7 @@ namespace The_Ezio_Trilogy_Installer
                         {
                             using (StreamWriter sw = new StreamWriter(AppData + @"\uMod\uMod_DX9temp.txt"))
                             {
-                                string line = sr.ReadLine();
+                                string? line = sr.ReadLine();
                                 while (line != null)
                                 {
 
@@ -479,6 +601,10 @@ namespace The_Ezio_Trilogy_Installer
             }
         }
 
+        /// <summary>
+        /// Sets up the game in uMod Template file
+        /// </summary>
+        /// <param name="gameName">Name of the game.</param>
         private async Task uModSaveFile(string gameName)
         {
             try
@@ -584,7 +710,9 @@ namespace The_Ezio_Trilogy_Installer
             }
         }
 
-        // Create Shortcut
+        /// <summary>
+        /// Creates the Shortcut in Search and on Desktop
+        /// </summary>
         private async Task CreateShortcut()
         {
             try
@@ -616,7 +744,9 @@ namespace The_Ezio_Trilogy_Installer
             }
         }
 
-        // Assasssin's Creed 2 Installation Specific
+        /// <summary>
+        /// Used for installing everything for Assassin's Creed 2
+        /// </summary>
         private async void AC2Installation()
         {
             try
@@ -664,8 +794,10 @@ namespace The_Ezio_Trilogy_Installer
                     }
                     await InstallMods(keyValue.Key);
                 };
+
                 Status.Text = "Setting up uMod";
                 await uModSetup("AssassinsCreedIIGame.exe");
+
                 await CreateShortcut();
                 Log.Information("Cleaning up");
                 Status.Text = "Cleaning up";

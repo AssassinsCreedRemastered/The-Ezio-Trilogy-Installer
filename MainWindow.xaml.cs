@@ -44,7 +44,7 @@ namespace The_Ezio_Trilogy_Installer
                 {
                     using (StreamWriter sw = new StreamWriter(AppData + @"\uMod\uMod_DX9temp.txt"))
                     {
-                        string line = sr.ReadLine();
+                        string? line = sr.ReadLine();
                         while (line != null)
                         {
                             if (line == '\0'.ToString() && !line.EndsWith(gameName))
@@ -160,9 +160,19 @@ namespace The_Ezio_Trilogy_Installer
             }
         }
 
-        private void InstallACR_Click(object sender, RoutedEventArgs e)
+        private async void InstallACR_Click(object sender, RoutedEventArgs e)
         {
-
+            try
+            {
+                DownloadWindow download = new DownloadWindow();
+                download.ShowDialog();
+                await Task.Delay(1);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error:");
+                return;
+            }
         }
 
         private void UninstallACII_Click(object sender, RoutedEventArgs e)
