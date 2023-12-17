@@ -164,8 +164,28 @@ namespace The_Ezio_Trilogy_Installer
         {
             try
             {
-                DownloadWindow download = new DownloadWindow();
-                download.ShowDialog();
+                Log.Information("Installing Assassin's Creed Revelations");
+                OpenFileDialog FileDialog = new OpenFileDialog();
+                FileDialog.Filter = "Executable Files|ACRSP.exe";
+                FileDialog.Title = "Select Assassins Creed - Revelations Executable";
+                if (FileDialog.ShowDialog() == true)
+                {
+                    path = System.IO.Path.GetDirectoryName(FileDialog.FileName);
+                }
+                else
+                {
+                    return;
+                }
+                DownloadWindow download = new DownloadWindow("ACR", path);
+                if (download == null || !download.IsVisible)
+                {
+                    download.ShowDialog();
+                }
+                else
+                {
+                    download.ShowDialog();
+                }
+                MessageBox.Show("Installation done");
                 await Task.Delay(1);
             }
             catch (Exception ex)
@@ -244,6 +264,7 @@ namespace The_Ezio_Trilogy_Installer
                     System.IO.File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\AC2Path.txt");
                 }
 
+                // Asking if the launcher wants to be deleted
                 MessageBoxResult LauncherDeletion = System.Windows.MessageBox.Show("Do you want to delete the launcher?", "Confirmation", MessageBoxButton.YesNo);
                 if (LauncherDeletion == MessageBoxResult.Yes)
                 {
@@ -367,6 +388,24 @@ namespace The_Ezio_Trilogy_Installer
                 if (System.IO.File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\ACBPath.txt"))
                 {
                     System.IO.File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\ACBPath.txt");
+                }
+
+                // Asking if the launcher wants to be deleted
+                MessageBoxResult LauncherDeletion = System.Windows.MessageBox.Show("Do you want to delete the launcher?", "Confirmation", MessageBoxButton.YesNo);
+                if (LauncherDeletion == MessageBoxResult.Yes)
+                {
+                    if (System.IO.File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\The Ezio Trilogy Launcher.exe"))
+                    {
+                        System.IO.File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\The Ezio Trilogy Launcher.exe");
+                    }
+                    if (System.IO.File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\Assassin's Creed - The Ezio Trilogy Remastered.lnk"))
+                    {
+                        System.IO.File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\Assassin's Creed - The Ezio Trilogy Remastered.lnk");
+                    }
+                    if (System.IO.File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu) + @"\Assassin's Creed - The Ezio Trilogy Remastered.lnk"))
+                    {
+                        System.IO.File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu) + @"\Assassin's Creed - The Ezio Trilogy Remastered.lnk");
+                    }
                 }
             }
             catch (Exception ex)

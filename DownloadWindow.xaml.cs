@@ -42,15 +42,20 @@ namespace The_Ezio_Trilogy_Installer
         public DownloadWindow(string game, string installationPath)
         {
             InitializeComponent();
-            if (game == "AC2")
+            path = installationPath;
+            switch (game)
             {
-                path = installationPath;
-                AC2Installation();
-            }
-            else if (game == "ACB")
-            {
-                path = installationPath;
-                ACBInstallation();
+                case "AC2":
+                    AC2Installation();
+                    break;
+                case "ACB":
+                    ACBInstallation();
+                    break;
+                case "ACR":
+                    ACRInstallation();
+                    break;
+                default:
+                    break;
             }
         }
         // Universal functions
@@ -813,6 +818,9 @@ namespace The_Ezio_Trilogy_Installer
             }
         }
 
+        /// <summary>
+        /// Used for installing everything for Assassin's Creed Brotherhood
+        /// </summary>
         private async void ACBInstallation()
         {
             try
@@ -873,6 +881,66 @@ namespace The_Ezio_Trilogy_Installer
             catch (Exception ex)
             {
                 Log.Error(ex, "");
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Used for installing everything for Assassin's Creed Revelations
+        /// </summary>
+        private async void ACRInstallation()
+        {
+            try
+            {
+                Log.Information("Assassin's Creed Revelations installation started");
+                // Creating folder where all of the temporary files will be stored
+                if (!System.IO.Directory.Exists("Installation Files"))
+                {
+                    Log.Information("Installation Files folder not found.");
+                    System.IO.Directory.CreateDirectory("Installation Files");
+                    Log.Information("Installation Files folder created.");
+                }
+
+                // This is where path to the install will be located
+                if (!System.IO.Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered"))
+                {
+                    Log.Information("Folder where all paths to game installation folders go not found.");
+                    System.IO.Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered");
+                    Log.Information("Folder where all paths to game installation folders created");
+                }
+
+                // Path towards executable
+                Log.Information("Writing path towards Assassin's Creed Revelations installation folder inside of ACRPath.txt");
+                using (StreamWriter sw = new StreamWriter(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\ACRPath.txt"))
+                {
+                    sw.WriteLine(path);
+                };
+
+                // First need to read Sources.txt to get all of the download links
+                Log.Information("Reading Mods download links from the Source");
+                await ReadSources("https://raw.githubusercontent.com/AssassinsCreedRemastered/The-Ezio-Trilogy-Mods/main/ACRSources.txt");
+                // For every download link we need to download it and then install it
+                for (int i = 0; i < Sources.Keys.Count; i++)
+                {
+                    KeyValuePair<string, string> keyValue = Sources.ElementAt(i);
+                    if (!System.IO.File.Exists(Directory.GetCurrentDirectory() + @"\Installation Files\" + keyValue.Key))
+                    {
+                        await DownloadFiles(keyValue.Value, @"Installation Files\" + keyValue.Key);
+                    }
+                    await InstallMods(keyValue.Key);
+                };
+                await CreateShortcut();
+                Status.Text = "Cleaning up";
+                Log.Information("Cleaning up");
+                System.IO.Directory.Delete(Directory.GetCurrentDirectory() + @"\Installation Files", true);
+                Log.Information("Installation Complete");
+                await Task.Delay(1);
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "");
+                System.Windows.MessageBox.Show(ex.Message);
                 return;
             }
         }
