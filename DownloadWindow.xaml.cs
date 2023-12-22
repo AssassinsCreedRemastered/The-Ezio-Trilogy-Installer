@@ -574,16 +574,15 @@ namespace The_Ezio_Trilogy_Installer
                             }
                         }
                         Log.Information("Setting up uMod for Assassin's Creed 2");
-                        using (StreamWriter sw = new StreamWriter(path + $@"\uMod\templates\{System.IO.Path.GetFileNameWithoutExtension(gameName)}.txt"))
+                        using (StreamWriter sw = new StreamWriter(path + $@"\uMod\templates\ac2.txt"))
                         {
                             sw.Write("SaveAllTextures:0\n");
                             sw.Write("SaveSingleTexture:0\n");
                             sw.Write("FontColour:255,0,0\n");
                             sw.Write("TextureColour:0,255,0\n");
-                            sw.Write("Add_true:" + path + @"\Mods\PCButtons\PC Buttons.tpf" + "\n");
                             sw.Write("Add_true:" + path + @"\Mods\Overhaul\Overhaul.tpf" + "\n");
                         }
-                        string AC2saveFile = path + @"\" + gameName + "|" + path + $@"\uMod\templates\{System.IO.Path.GetFileNameWithoutExtension(gameName)}.txt";
+                        string AC2saveFile = path + @"\" + gameName + "|" + path + $@"\uMod\templates\ac2.txt";
                         char[] AC2array = AC2saveFile.ToCharArray();
                         List<char> AC2charList = new List<char>();
                         for (int i = 0; i < AC2array.Length; i++)
