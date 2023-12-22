@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:The_Ezio_Trilogy_Installer"
         mc:Ignorable="d"
-        Title="MainWindow" Width="1400" Height="620" Background="Transparent" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None">
+        Title="MainWindow" Width="1400" Height="620" Background="Transparent" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None" AllowsTransparency="True">
     <Border Background="#FFDADADA"
             BorderBrush="Gray"
             BorderThickness="1"
@@ -152,7 +152,7 @@
                 </Button.Template>
             </Button>
             <!--Uninstall ACR Button-->
-            <Button x:Name="UninstallACR" Grid.Column="2" Grid.Row="1" Background="{x:Null}" BorderBrush="{x:Null}" BorderThickness="0,0,0,0" Cursor="Hand" Margin="200,400,0,0" HorizontalAlignment="Center" VerticalAlignment="Top">
+            <Button x:Name="UninstallACR" Grid.Column="2" Grid.Row="1" Background="{x:Null}" BorderBrush="{x:Null}" BorderThickness="0,0,0,0" Cursor="Hand" Margin="200,400,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Click="UninstallACR_Click">
                 <Button.Content>
                     <TextBlock Text="uninstall" FontFamily="pack://application:,,,/The Ezio Trilogy Installer;component/Assets/Font/Assassin$.ttf#Assassin$" FontSize="48" Foreground="WhiteSmoke" FontWeight="Bold" >
                         <TextBlock.Effect>

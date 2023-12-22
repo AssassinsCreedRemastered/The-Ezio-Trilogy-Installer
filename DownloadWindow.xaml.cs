@@ -103,81 +103,6 @@ namespace The_Ezio_Trilogy_Installer
                 return;
             }
         }
-
-        /*
-        private async Task ReadSources(string url)
-        {
-            try
-            {
-                Status.Text = "Grabbing Sources";
-                Sources.Clear();
-                HttpWebRequest SourceText = (HttpWebRequest)HttpWebRequest.Create(url);
-                SourceText.UserAgent = "Mozilla/5.0";
-                var response = SourceText.GetResponse();
-                var content = response.GetResponseStream();
-                using (var reader = new StreamReader(content))
-                {
-                    string fileContent = reader.ReadToEnd();
-                    string[] lines = fileContent.Split(new char[] { '\n' });
-                    foreach (string line in lines)
-                    {
-                        try
-                        {
-                            if (line != "")
-                            {
-                                string[] splitLine = line.Split(';');
-                                Sources.Add(splitLine[0], splitLine[1]);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            System.Windows.MessageBox.Show(ex.ToString());
-                            continue;
-                        }
-                    }
-                }
-                GC.Collect();
-                await Task.Delay(1);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "Error:");
-                return;
-            }
-        }
-        */
-
-        /*
-         * Old method
-        private async Task DownloadFiles(string url, string Destination)
-        {
-            try
-            {
-                Log.Information($"Downloading {System.IO.Path.GetFileNameWithoutExtension(Destination)}");
-                Status.Text = "Downloading " + System.IO.Path.GetFileNameWithoutExtension(Destination);
-                Progress.Value = 0;
-                using (WebClient client = new WebClient())
-                {
-                    client.DownloadProgressChanged += WebClientDownloadProgressChanged;
-                    await client.DownloadFileTaskAsync(new Uri(url), Destination);
-                }
-                GC.Collect();
-                Log.Information("Download finished");
-                await Task.Delay(1);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "");
-                return;
-            }
-        }
-
-        // This is used to show progress on the ProgressBar
-        private void WebClientDownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
-        {
-            Progress.Value = e.ProgressPercentage;
-        }
-        */
         /// <summary>
         /// Downloads mods from Github backup repository
         /// </summary>
@@ -314,24 +239,21 @@ namespace The_Ezio_Trilogy_Installer
                         {
                             if (System.IO.File.Exists(Directory + @"\dinput8.dll"))
                             {
-                                System.IO.File.Move(Directory + @"\dinput8.dll", path + @"\dinput8.dll", true);
+                                System.IO.File.Copy(Directory + @"\dinput8.dll", path + @"\dinput8.dll", true);
                             }
                         }
-                        if (System.IO.Directory.Exists(Directory))
-                        {
-                            System.IO.Directory.Delete(Directory);
-                        };
                         break;
                     case "EaglePatchAC2":
+                        if(!System.IO.Directory.Exists(path + @"\scripts\"))
+                        {
+                            System.IO.Directory.CreateDirectory(path + @"\scripts\");
+                        }
                         if (System.IO.Directory.Exists(Directory))
                         {
                             if (!System.IO.Directory.Exists(path + @"\scripts"))
                             {
-                                System.IO.Directory.Move(Directory, path + @"\scripts");
-                            }
-                            if (System.IO.File.Exists(path + @"\scripts\Readme - EaglePatchAC2.txt"))
-                            {
-                                System.IO.File.Delete(path + @"\scripts\Readme - EaglePatchAC2.txt");
+                                System.IO.File.Copy(Directory + @"\EaglePatchAC2.asi", path + @"\scripts\EaglePatchAC2.asi", true);
+                                System.IO.File.Copy(Directory + @"\EaglePatchAC2.ini", path + @"\scripts\EaglePatchAC2.ini", true);
                             }
                             await DisableUnlockingRewards();
                         }
@@ -343,8 +265,17 @@ namespace The_Ezio_Trilogy_Installer
                             {
                                 if (!System.IO.File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\The Ezio Trilogy Launcher.exe"))
                                 {
-                                    System.IO.File.Move(Directory + @"\The Ezio Trilogy Launcher.exe", Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\The Ezio Trilogy Launcher.exe");
+                                    System.IO.File.Copy(Directory + @"\The Ezio Trilogy Launcher.exe", Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\The Ezio Trilogy Launcher.exe", true);
                                 }
+                            }
+                        }
+                        break;
+                    case "Updater":
+                        if (System.IO.Directory.Exists(Directory))
+                        {
+                            if (System.IO.File.Exists(Directory + @"\The Ezio Trilogy Launcher Updater.exe"))
+                            {
+                                System.IO.File.Copy(Directory + @"\The Ezio Trilogy Launcher Updater.exe", Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\The Ezio Trilogy Launcher Updater.exe", true);
                             }
                         }
                         break;
@@ -353,7 +284,7 @@ namespace The_Ezio_Trilogy_Installer
                         {
                             if (!System.IO.Directory.Exists(path + @"\uMod"))
                             {
-                                System.IO.Directory.Move(Directory, path + @"\uMod");
+                                CopyDirectory(Directory, path + @"\uMod");
                             }
                         }
                         break;
@@ -364,7 +295,7 @@ namespace The_Ezio_Trilogy_Installer
                         };
                         if (!System.IO.Directory.Exists(path + @"\Mods\PS3Buttons"))
                         {
-                            System.IO.Directory.Move(Directory, path + @"\Mods\PS3Buttons");
+                            CopyDirectory(Directory, path + @"\Mods\PS3Buttons");
                         }
                         break;
                     case "PCButtons":
@@ -380,20 +311,7 @@ namespace The_Ezio_Trilogy_Installer
                     case "ReShade":
                         if (System.IO.Directory.Exists(Directory))
                         {
-                            foreach (string file in System.IO.Directory.GetFiles(Directory))
-                            {
-                                if (!System.IO.File.Exists(path + @"\" + System.IO.Path.GetFileName(file)))
-                                {
-                                    System.IO.File.Move(file, path + @"\" + System.IO.Path.GetFileName(file), true);
-                                }
-                            }
-                            foreach (string dir in System.IO.Directory.GetDirectories(Directory))
-                            {
-                                if (!System.IO.Directory.Exists(path + @"\" + System.IO.Path.GetFileName(dir)))
-                                {
-                                    System.IO.Directory.Move(dir, path + @"\" + System.IO.Path.GetFileName(dir));
-                                }
-                            }
+                            CopyDirectory(Directory, path + @"\");
                         }
                         break;
                     case "Overhaul":
@@ -403,7 +321,7 @@ namespace The_Ezio_Trilogy_Installer
                         };
                         if (!System.IO.Directory.Exists(path + @"\Mods\Overhaul"))
                         {
-                            System.IO.Directory.Move(Directory, path + @"\Mods\Overhaul");
+                            CopyDirectory(Directory, path + @"\Mods\Overhaul");
                         }
                         break;
                     default:
@@ -411,11 +329,41 @@ namespace The_Ezio_Trilogy_Installer
                 }
                 Log.Information($"Moving done");
                 GC.Collect();
-                await Task.Delay(10);
+                await Task.Delay(1);
             }
             catch (Exception ex)
             {
                 Log.Error(ex, "");
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Used to copy directories (Directory.Move doesn't work over different partitions)
+        /// </summary>
+        private static void CopyDirectory(string source, string target)
+        {
+            try
+            {
+                if (!Directory.Exists(target))
+                {
+                    Directory.CreateDirectory(target);
+                }
+                foreach (string file in Directory.GetFiles(source))
+                {
+                    string destination = System.IO.Path.Combine(target, System.IO.Path.GetFileName(file));
+                    System.IO.File.Copy(file, destination, true);
+                }
+
+                foreach (string subDir in Directory.GetDirectories(source))
+                {
+                    string destination = System.IO.Path.Combine(target, System.IO.Path.GetFileName(subDir));
+                    CopyDirectory(subDir, destination);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message);
                 return;
             }
         }

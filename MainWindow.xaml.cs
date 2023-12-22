@@ -272,6 +272,10 @@ namespace The_Ezio_Trilogy_Installer
                     {
                         System.IO.File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\The Ezio Trilogy Launcher.exe");
                     }
+                    if (System.IO.File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\The Ezio Trilogy Launcher Updater.exe"))
+                    {
+                        System.IO.File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\The Ezio Trilogy Launcher Updater.exe");
+                    }
                     if (System.IO.File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\Assassin's Creed - The Ezio Trilogy Remastered.lnk"))
                     {
                         System.IO.File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\Assassin's Creed - The Ezio Trilogy Remastered.lnk");
@@ -328,6 +332,7 @@ namespace The_Ezio_Trilogy_Installer
                     System.IO.Directory.Delete(path + @"\reshade-shaders", true);
                 };
                 Log.Information("Uninstallation done");
+                GC.Collect();
                 MessageBox.Show("Uninstallation done");
             }
             catch (Exception ex)
@@ -337,7 +342,7 @@ namespace The_Ezio_Trilogy_Installer
             }
         }
 
-        private void UninstallACB_Click(object sender, RoutedEventArgs e)
+        private async void UninstallACB_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -369,18 +374,35 @@ namespace The_Ezio_Trilogy_Installer
                     System.IO.File.Delete(path + @"\dinput8.dll");
                 };
 
-                // Delete scripts folder that has EaglePatch
-                Log.Information("Removing EaglePatch");
+                // Delete ReShade
+                Log.Information("Removing ReShade");
                 if (System.IO.Directory.Exists(path + @"\scripts"))
                 {
                     System.IO.Directory.Delete(path + @"\scripts", true);
-                };
+                }
 
                 // Delete uMod
                 Log.Information("Removing uMod");
                 if (System.IO.Directory.Exists(path + @"\uMod"))
                 {
                     System.IO.Directory.Delete(path + @"\uMod", true);
+                }
+
+                // Asking if uMod settings want to be deleted
+                MessageBoxResult result = MessageBox.Show("Do you want to delete all of uMod settings?", "Confirmation", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
+                {
+                    // Delete uMod settings
+                    Log.Information("Removing uMod settings");
+                    if (System.IO.Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\uMod"))
+                    {
+                        System.IO.Directory.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\uMod", true);
+                    }
+                }
+                else if (result == MessageBoxResult.No)
+                {
+                    Log.Information("Removing the game from uMod settings");
+                    await RemoveGameFromuMod("ACBSP.exe");
                 }
 
                 // Removing path
@@ -398,6 +420,10 @@ namespace The_Ezio_Trilogy_Installer
                     {
                         System.IO.File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\The Ezio Trilogy Launcher.exe");
                     }
+                    if (System.IO.File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\The Ezio Trilogy Launcher Updater.exe"))
+                    {
+                        System.IO.File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\The Ezio Trilogy Launcher Updater.exe");
+                    }
                     if (System.IO.File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\Assassin's Creed - The Ezio Trilogy Remastered.lnk"))
                     {
                         System.IO.File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\Assassin's Creed - The Ezio Trilogy Remastered.lnk");
@@ -406,6 +432,146 @@ namespace The_Ezio_Trilogy_Installer
                     {
                         System.IO.File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu) + @"\Assassin's Creed - The Ezio Trilogy Remastered.lnk");
                     }
+
+                    // Checking if Documents folder containing all of the Paths towards game installation folders is empty, if it is remove it
+                    Log.Information("Checking if Documents folder containing all of the Paths towards game installation folders exist");
+                    if (System.IO.Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\"))
+                    {
+                        Log.Information("Checking if Documents folder containing all of the Paths towards game installation folders is empty");
+                        if (Directory.EnumerateFileSystemEntries(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\").Count() == 0)
+                        {
+                            Log.Information("Documents folder");
+                            System.IO.Directory.Delete(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\");
+                        }
+                        else
+                        {
+                            Log.Information("Folder not empty.");
+                        }
+                    }
+
+                    Log.Information("Uninstallation done");
+                    GC.Collect();
+                    MessageBox.Show("Uninstallation done");
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "");
+                MessageBox.Show(ex.Message);
+                return;
+            }
+        }
+
+        private async void UninstallACR_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                OpenFileDialog FileDialog = new OpenFileDialog();
+                FileDialog.Filter = "Executable Files|ACRSP.exe";
+                FileDialog.Title = "Select Assassins Creed Revelations Executable";
+                if (FileDialog.ShowDialog() == true)
+                {
+                    path = System.IO.Path.GetDirectoryName(FileDialog.FileName);
+                }
+                else
+                {
+                    Log.Information("Uninstallation cancelled");
+                    MessageBox.Show("Unninstallation cancelled");
+                    return;
+                }
+
+                // Delete Mods Folder that has all of the uMod mods
+                Log.Information("Removing uMod mods folder");
+                if (System.IO.Directory.Exists(path + @"\Mods"))
+                {
+                    System.IO.Directory.Delete(path + @"\Mods", true);
+                }
+
+                // Delete Ultimate ASI Loader
+                Log.Information("Removing ASI Loader");
+                if (System.IO.File.Exists(path + @"\dinput8.dll"))
+                {
+                    System.IO.File.Delete(path + @"\dinput8.dll");
+                };
+
+                // Delete ReShade
+                Log.Information("Removing ReShade");
+                if (System.IO.Directory.Exists(path + @"\scripts"))
+                {
+                    System.IO.Directory.Delete(path + @"\scripts", true);
+                }
+
+                // Delete uMod
+                Log.Information("Removing uMod");
+                if (System.IO.Directory.Exists(path + @"\uMod"))
+                {
+                    System.IO.Directory.Delete(path + @"\uMod", true);
+                }
+
+                // Asking if uMod settings want to be deleted
+                MessageBoxResult result = MessageBox.Show("Do you want to delete all of uMod settings?", "Confirmation", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
+                {
+                    // Delete uMod settings
+                    Log.Information("Removing uMod settings");
+                    if (System.IO.Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\uMod"))
+                    {
+                        System.IO.Directory.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\uMod", true);
+                    }
+                }
+                else if (result == MessageBoxResult.No)
+                {
+                    Log.Information("Removing the game from uMod settings");
+                    await RemoveGameFromuMod("ACBSP.exe");
+                }
+
+                // Removing path
+                Log.Information("Removing txt file containing game path towards the game");
+                if (System.IO.File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\ACRPath.txt"))
+                {
+                    System.IO.File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\ACRPath.txt");
+                }
+
+                // Asking if the launcher wants to be deleted
+                MessageBoxResult LauncherDeletion = System.Windows.MessageBox.Show("Do you want to delete the launcher?", "Confirmation", MessageBoxButton.YesNo);
+                if (LauncherDeletion == MessageBoxResult.Yes)
+                {
+                    if (System.IO.File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\The Ezio Trilogy Launcher.exe"))
+                    {
+                        System.IO.File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\The Ezio Trilogy Launcher.exe");
+                    }
+                    if (System.IO.File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\The Ezio Trilogy Launcher Updater.exe"))
+                    {
+                        System.IO.File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\The Ezio Trilogy Launcher Updater.exe");
+                    }
+                    if (System.IO.File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\Assassin's Creed - The Ezio Trilogy Remastered.lnk"))
+                    {
+                        System.IO.File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\Assassin's Creed - The Ezio Trilogy Remastered.lnk");
+                    }
+                    if (System.IO.File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu) + @"\Assassin's Creed - The Ezio Trilogy Remastered.lnk"))
+                    {
+                        System.IO.File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu) + @"\Assassin's Creed - The Ezio Trilogy Remastered.lnk");
+                    }
+
+                    // Checking if Documents folder containing all of the Paths towards game installation folders is empty, if it is remove it
+                    Log.Information("Checking if Documents folder containing all of the Paths towards game installation folders exist");
+                    if (System.IO.Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\"))
+                    {
+                        Log.Information("Checking if Documents folder containing all of the Paths towards game installation folders is empty");
+                        if (Directory.EnumerateFileSystemEntries(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\").Count() == 0)
+                        {
+                            Log.Information("Documents folder");
+                            System.IO.Directory.Delete(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\");
+                        }
+                        else
+                        {
+                            Log.Information("Folder not empty.");
+                        }
+                    }
+
+                    Log.Information("Uninstallation done");
+                    GC.Collect();
+                    MessageBox.Show("Uninstallation done");
                 }
             }
             catch (Exception ex)
