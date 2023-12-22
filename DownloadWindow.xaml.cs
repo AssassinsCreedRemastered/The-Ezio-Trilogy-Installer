@@ -250,11 +250,8 @@ namespace The_Ezio_Trilogy_Installer
                         }
                         if (System.IO.Directory.Exists(Directory))
                         {
-                            if (!System.IO.Directory.Exists(path + @"\scripts"))
-                            {
-                                System.IO.File.Copy(Directory + @"\EaglePatchAC2.asi", path + @"\scripts\EaglePatchAC2.asi", true);
-                                System.IO.File.Copy(Directory + @"\EaglePatchAC2.ini", path + @"\scripts\EaglePatchAC2.ini", true);
-                            }
+                            System.IO.File.Copy(Directory + @"\EaglePatchAC2.asi", path + @"\scripts\EaglePatchAC2.asi", true);
+                            System.IO.File.Copy(Directory + @"\EaglePatchAC2.ini", path + @"\scripts\EaglePatchAC2.ini", true);
                             await DisableUnlockingRewards();
                         }
                         break;
