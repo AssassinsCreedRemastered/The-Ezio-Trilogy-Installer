@@ -275,7 +275,7 @@ namespace The_Ezio_Trilogy_Installer
                         {
                             if (System.IO.File.Exists(Directory + @"\The Ezio Trilogy Launcher Updater.exe"))
                             {
-                                System.IO.File.Copy(Directory + @"\The Ezio Trilogy Launcher Updater.exe", Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\The Ezio Trilogy Launcher Updater.exe", true);
+                                System.IO.File.Copy(Directory + @"\The Ezio Trilogy Launcher Updater.exe", Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + @"\Assassin's Creed - The Ezio Trilogy Remastered\The Ezio Trilogy Launcher Updater.exe", true);
                             }
                         }
                         break;

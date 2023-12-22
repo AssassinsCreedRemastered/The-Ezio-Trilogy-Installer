@@ -22,15 +22,11 @@ namespace The_Ezio_Trilogy_Installer
         [DllImport("Kernel32")]
         public static extern void FreeConsole();
 
+        public bool logging = false;
+
         public App()
         {
             InitializeComponent();
-            // Activating Logging Tool
-            Log.Logger = new LoggerConfiguration()
-            .WriteTo.Console(
-                outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss}|{Level}|{Message}{NewLine}{Exception}")
-            //.WriteTo.File("Logs.txt", rollingInterval: RollingInterval.Day)
-            .CreateLogger();
         }
 
         private void Application_Startup(object sender, StartupEventArgs e)
@@ -42,12 +38,29 @@ namespace The_Ezio_Trilogy_Installer
                 {
                     case "-console":
                         AllocConsole();
+                        logging = true;
                         break;
                     default:
                         break;
                 }
             }
             Serilog.Log.Logger = Log.Logger;
+            // Activating Logging Tool
+            if (logging)
+            {
+                Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console(
+                    outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss}|{Level}|{Message}{NewLine}{Exception}")
+                .WriteTo.File("Logs.txt", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
+            }
+            else
+            {
+                Log.Logger = new LoggerConfiguration()
+                    .WriteTo.Console(outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss}|{Level}|{Message}{NewLine}{Exception}")
+                    //.WriteTo.File("Logs.txt", rollingInterval: RollingInterval.Day)
+                    .CreateLogger();
+            }
         }
 
         private void Application_Exit(object sender, ExitEventArgs e)
