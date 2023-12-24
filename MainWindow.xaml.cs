@@ -508,6 +508,12 @@ namespace The_Ezio_Trilogy_Installer
                     System.IO.Directory.Delete(path + @"\uMod", true);
                 }
 
+                // Reenabling "systemdetection.dll"
+                if (System.IO.File.Exists(path + @"\systemdetection.dll.disabled"))
+                {
+                    System.IO.File.Move(path + @"\systemdetection.dll.disabled", path + @"\systemdetection.dll", true);
+                }
+
                 // Asking if uMod settings want to be deleted
                 MessageBoxResult result = MessageBox.Show("Do you want to delete all of uMod settings?", "Confirmation", MessageBoxButton.YesNo);
                 if (result == MessageBoxResult.Yes)

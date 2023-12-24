@@ -873,6 +873,13 @@ namespace The_Ezio_Trilogy_Installer
                     }
                     await InstallMods(keyValue.Key);
                 };
+
+                // Disabling "systemdetection.dll"
+                if (System.IO.File.Exists(path + @"\systemdetection.dll"))
+                {
+                    System.IO.File.Move(path + @"\systemdetection.dll", path + @"\systemdetection.dll.disabled", true);
+                }
+
                 await CreateShortcut();
                 Status.Text = "Cleaning up";
                 Log.Information("Cleaning up");
