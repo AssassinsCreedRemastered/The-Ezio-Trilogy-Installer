@@ -612,7 +612,7 @@ namespace The_Ezio_Trilogy_Installer
                         {
                             using (StreamWriter sw = new StreamWriter(path + @"\uMod\Status.txt"))
                             {
-                                sw.Write("Enabled=0");
+                                sw.Write("Enabled=1");
                             }
                         }
                         using (StreamWriter sw = new StreamWriter(path + $@"\uMod\templates\{System.IO.Path.GetFileNameWithoutExtension(gameName)}.txt"))
